@@ -3,7 +3,7 @@
 ### VARIABLES ###
 
 primaryIP=allipaddr=`ip -4 -o addr| awk '{gsub(/\/.*/,"",$4); print $4}'`
-
+MBDpassword=M4R14DBpassword
 
 ##### Mariadb 10.1 and phpmyfaq DB creation.
 
@@ -33,11 +33,11 @@ echo "innodb_file_per_table" >> /etc/my.cnf.d/server-tac.cnf
 systemctl enable mariadb.service
 systemctl start mariadb.service
 
-/usr/bin/mysqladmin -u root password "T@C3Mpr3S@r1@LMDB"
+/usr/bin/mysqladmin -u root password "$MDBpassword"
 
 echo "[client]" > /root/.my.cnf
 echo "user = "root"" >> /root/.my.cnf
-echo "password = \"T@C3Mpr3S@r1@LMDB\""  >> /root/.my.cnf 
+echo "password = \"$MDBpassword\""  >> /root/.my.cnf 
 echo "host = \"localhost\""  >> /root/.my.cnf
 
 mysql -e "CREATE DATABASE phpmyfaqdb default character set utf8;"
@@ -61,7 +61,7 @@ perl-MailTools perl-MIME-Lite perl-MIME-tools perl-MIME-Types \
 perl-Module-Load perl-Package-Constants \
 perl-Time-HiRes perl-TimeDate perl-YAML-Syck php
 
-3.- Descarga y descrompresion de phpmyfaq:
+### DOWNLOAD AND UNZIP PHPMYFAQ:
 
 mkdir /workdir
 cd /workdir
@@ -70,7 +70,7 @@ unzip phpMyFAQ-2.8.29.zip -d /var/www/html/
 chown -R root.root /var/www/html/phpmyfaq
 
 
-4.- Configuración inicial de phpmyfaq y php.ini:
+### INITIAL CONFIGURATION FOR PHPMYFAQ AND php.ini:
 
 cd /var/www/html/phpmyfaq/
 mkdir images
@@ -86,7 +86,7 @@ crudini --set /etc/php.ini PHP upload_max_filesize 60M
 
 crudini --set /etc/php.ini PHP post_max_size 60M
 
-5.- Configuración de apache:
+### APACHE CONFIGURATION:
 
 echo "Alias /phpmyfaq /var/www/html/phpmyfaq" > /etc/httpd/conf.d/phpmyfaq.conf
 echo "<location /phpmyfaq>" >> /etc/httpd/conf.d/phpmyfaq.conf
@@ -96,72 +96,49 @@ echo "</location>" >> /etc/httpd/conf.d/phpmyfaq.conf
 systemctl restart httpd
 systemctl enable httpd
 
-6.- Configuración final de phpmyfaq:
+### INITIAL CONFIGURATION OF PHPMYFAQ:
 
-Se ingresa al siguiente URL:
+clear
 
-http://172.16.20.11/phpmyfaq/install/setup.php
 
-Se seleccionan/completan los siguientes datos en la página de setup:
+echo "PLEASE ENTER THIS URL ON YOUR WEB BROWSER http://$primaryIP/phpmyfaq/install/setup.php\n"
+sleep 5
 
-Database Server: MySQL/MariaDB 5.x
-Database Hostname: 127.0.0.1
-Database User: phpmyfaqdbuser
-Database Password: P7Pm6F@Q7S3rDB
-Database Name: phpmyfaqdb
-Table prefix: _ (el simbolo de underscore... "_")
-Default language: Spanish
-Permission Level: medium (with group support)
-Your name: TAC PHP Admin
-Your e-mail: Colocar un email válido. Ejemplo: rrmartinezp@tacempresarial.com.ve
-Your login name: admin
-Your Password: l1n4xvzla
-Retype Password: l1n4xvzla
 
-Finalmente se hace click en "install phpmyfaq" (al fondo de la página).
+#Se seleccionan/completan los siguientes datos en la página de setup:
+echo "SELECT/FILL THE NEXT STEPS ON THE WEB SETUP:\n"
+sleep 5
 
-Luego, se completa la encuesta y se hace click para enviarla.
+echo "Database Server: MySQL/MariaDB 5.x\n"
+echo "Database Hostname: 127.0.0.1\n"
+echo "Database User: phpmyfaqdbuser\n"
+echo "Database Password: P7Pm6F@Q7S3rDB\n"
+echo "Database Name: phpmyfaqdb\n"
+echo "Table prefix: _ (el simbolo de underscore... "_")\n"
+echo "Default language: Spanish\n"
+echo "Permission Level: medium (with group support)\n"
+echo "Your name: PHP Admin\n"
+echo "Your e-mail: Colocar un email válido. Ejemplo: rrmartinezp@tacempresarial.com.ve\n"
+echo "Your login name: admin\n"
+echo "Your Password: l1n4xvzla\n"
+echo "Retype Password: l1n4xvzla\n"
 
-Una vez completado este proceso, en la consola ssh del servidor se ejecutan los siguientes comandos:
+echo "FINALY CLICK ON "install phpmyfaq" (AT THE BOTTOM OF THE PAGE).\n"
+
+### BACK TO THE SSH CONSOLE FROM SERVER AGAIN:
 
 chmod 0400 /var/www/html/phpmyfaq/install/setup.php
 chmod 0400 /var/www/html/phpmyfaq/install/update.php
 
-Ya en este punto se puede ingresar a los siguientes URL:
+### AT THIS POINT YOU CAN ENTER ON THE URL:
 
-URL Principal: http://172.16.20.11/phpmyfaq
-URL de Administración: http://172.16.20.11/phpmyfaq/admin/index.php
+echo "URL Principal: http://$primaryIP/phpmyfaq\n"
+echo "URL de Administración: http://172.16.20.11/phpmyfaq/admin/index.php\n"
 
-7.- Opcional: Index redirect:
-
-Si se requiere un redirect desde el root-web del servidor apache, se debe crear el archivo siguiente:
-
-vi /var/www/html/index.html
-
-Con el contenido:
-
-<HTML>
-<HEAD>
-<META HTTP-EQUIV="refresh" CONTENT="0;URL=/phpmyfaq">
-</HEAD>
-<BODY>
-</BODY>
-</HTML>
-
-Se puede crear de manera automatizada de la siguiente forma:
-
-echo "<HTML>" > /var/www/html/index.html
-echo "<HEAD>" >> /var/www/html/index.html
-echo "<META HTTP-EQUIV=\"refresh\" CONTENT=\"0;URL=/phpmyfaq\">" >> /var/www/html/index.html
-echo "</HEAD>" >> /var/www/html/index.html
-echo "<BODY>" >> /var/www/html/index.html
-echo "</BODY>" >> /var/www/html/index.html
-echo "</HTML>" >> /var/www/html/index.html
-
-8.- Respaldos automatizados del phpmyfaq y la base de datos:
-
-En el script de respaldo automatizado del servidor, se incluyó la ruta del php, los archivos de apache del phpmyfaq (control y data), y la base de datos: El script /usr/local/bin/server-backup.sh quedó de la siguiente manera:
-
+### AUTOMATIC BACKUPS:
+#
+# Automatic backup script should be located on /usr/local/bin/server-backup.sh
+#
 #!/bin/bash
 #
 # Server Backup Script
@@ -169,7 +146,7 @@ En el script de respaldo automatizado del servidor, se incluyó la ruta del php,
 # By Reinaldo Martinez P.
 # Caracas, Venezuela.
 # TigerLinux AT gmail DOT com
-#
+# tigerlinux.github.io
 
 PATH=$PATH:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 
@@ -178,7 +155,7 @@ myhostname=`hostname -s`
 timestamp=`date +%Y%m%d%H%M`
 daystoremove=5
 databasebackupuser="root"
-databasebackuppass="T@C3Mpr3S@r1@LMDB"
+databasebackuppass="M4R14DBpassword"
 
 backuplist='
         /etc/named*
