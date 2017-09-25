@@ -1,12 +1,15 @@
 #!bin/bash
 
-#### Ambient CentOS server with IP 172.16.20.10
+### VARIABLES ###
+
+primaryIP=allipaddr=`ip -4 -o addr| awk '{gsub(/\/.*/,"",$4); print $4}'`
 
 
 ##### Mariadb 10.1 and phpmyfaq DB creation.
 
 cd /etc/yum.repos.d
-wget http://172.16.20.10/cfgs/repos/centos7/mariadb101-amd64.repo
+#wget http://172.16.20.10/cfgs/repos/centos7/mariadb101-amd64.repo
+wget http://$primaryIP/cfgs/repos/centos7/mariadb101-amd64.repo
 cd /
 yum clean all && yum -y update
 yum -y install MariaDB MariaDB-server MariaDB-client galera
@@ -43,7 +46,7 @@ mysql -e "GRANT ALL ON phpmyfaqdb.* TO 'phpmyfaqdbuser'@'127.0.0.1' IDENTIFIED B
 mysql -e "GRANT ALL ON phpmyfaqdb.* TO 'phpmyfaqdbuser'@'localhost' IDENTIFIED BY 'P7Pm6F@Q7S3rDB';"
 mysql -e "FLUSH PRIVILEGES;"
 
-2.- Instalación de dependencias (apache, etc.):
+### DEPENDENCIES INSTALLATION, (Apache, etc.):
 
 yum -y install php-cli php php-gd php-mysql httpd gd \
 perl-Archive-Tar perl-MIME-Lite perl-MIME-tools \
