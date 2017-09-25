@@ -1,19 +1,9 @@
 #!bin/bash
 
-Instalación de base de conocimientos (servidor primario de infraestructura)
+#### Ambient CentOS server with IP 172.16.20.10
 
-Ambiente base:
 
-Server IP: 172.16.20.11
-Centos 7 con repositorio EPEL 7 activo y disponible. SELINUX y FirewallD desactivados
-
-Objetivo:
-
-Crear el punto central de documentación para todos los procesos y tecnologías de TAC Empresarial en un sistema de base de conocimiento basado en PHPMYFAQ 2.8 sobre Centos 7, con sistema integrado de respaldos e históricos de dichos respaldos (hasta 5 días).
-
-Procedimiento de instalación:
-
-1.- Instalación de mariadb 10.1 y creación de la BD de phpmyfaq.
+##### Mariadb 10.1 and phpmyfaq DB creation.
 
 cd /etc/yum.repos.d
 wget http://172.16.20.10/cfgs/repos/centos7/mariadb101-amd64.repo
