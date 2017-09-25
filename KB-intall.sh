@@ -193,7 +193,3 @@ find $directory/ -name "backup-server-db-*$myhostname*gz" -mtime +$daystoremove 
 #
 # END
 #
-
-Este script se ejecuta vía crontab (/etc/cron.d/server-backup-crontab) todos los días en la madrugada, y envía toda la data respaldad a /mnt/backups. Este directorio es un punto de montaje contra la NAS, de manera que toda nuestra data queda respaldad de manera externa.
-
-NOTA: El script de respaldo mantiene un histórico de 5 días de todos los respaldos de data y bases de datos del servidor.
